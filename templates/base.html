@@ -22,21 +22,33 @@
               <li class="nav-item">
                 <a class="nav-link active text-light" aria-current="page" href="{% url 'home' %}">Home</a>
               </li>
+              {% if user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link text-light" href="{% url 'add_musician' %}">Musician</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link text-light" href="{% url 'add_album' %}">Albums</a>
               </li>
+              {% endif %}
             </ul>
             <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-secondary text-light" type="submit">Search</button>
+              {% if not user.is_authenticated %}
+              <a href="{% url 'signup' %}" class="btn btn-outline-light bg-secondary m-1" type="submit">signup</a>
+              <a href="{% url 'login' %}" class="btn btn-outline-dark bg-warning m-1" type="submit">Login</a>
+              {% else %}
+              <a href="#" class="btn btn-outline-dark bg-primary m-1" type="submit" >Profile</a>
+              <a href="{% url 'logout' %}" class="btn btn-outline-dark bg-danger m-1" type="submit">Logout</a>
+              {% endif %}
             </form>
           </div>
         </div>
       </nav>
   </head>
+  {% if messages %}
+  {% for m in messages %}
+  <div class='bg-success text-light text-center'>{{m}}</div>
+  {% endfor %}
+  {% endif %}
   <body class='bg-light'>
     {%  block content %}
   <h1>  <b style="margin-top:30px;" class='row d-flex text-light justify-content-center text-dark'>Enjoy Your Life with Musicseum</b></h1> <i class="fas fa-music"></i>
@@ -50,6 +62,7 @@
         <th scope="col">ID</th>
         <th scope="col">Musician Name</th>
         <th scope="col">Email</th>
+        <th scope="col">Album Rating</th>
         <th scope="col">Instrument Type</th>
         <th scope="col">Album Name</th>
         <th scope="col">Release Date</th>
@@ -60,12 +73,20 @@
       {% for i in form %}
       <tr>
         <th scope="row">{{i.id}}</th>
+        {% if user.is_authenticated %}
         <td><a class='btn btn-dark text-light'  href="{% url 'edit_musician' i.musician.id  %}">{{i.musician.Firstname}}</a></td>
-        <td>{{i.musician.Email}}</td>
-        <td>{{i.musician.Instrument}}</td>
-        <td>{{i.Name}}</td>
-        <td>{{i.date}}</td>
+        {% else %}
+        <td><a class='btn btn-dark text-light'  >{{i.musician.Firstname}}</a></td>
+        {% endif %}
+        
+        <td >{{i.musician.Email}}</td>
+         <td class="text-center"> {{i.Rating}}</td>
+        <td class="text-center">{{i.musician.Instrument}}</td>
+        <td class="text-center">{{i.Name}}</td>
+        <td class="text-center">{{i.date}}</td>
+        {% if user.is_authenticated %}
         <td> <a class='btn btn-dark text-light m-1'  href="{% url 'edit_album' i.id  %}">Edit</a> <a class='btn btn-danger text-light m-1'  href="{% url 'delete_album' i.id  %}">Delete</a> </td>
+        {% endif %}
         
       </tr>
       {% endfor %}
